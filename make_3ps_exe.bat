@@ -12,9 +12,11 @@ IF DEFINED VS140COMNTOOLS (
   SET GENERATOR="Visual Studio 11"
 ) ELSE IF DEFINED VS100COMNTOOLS (
   SET GENERATOR="Visual Studio 10"
+) ELSE IF DEFINED VS90COMNTOOLS (
+  SET GENERATOR="Visual Studio 9 2008"
 )
 IF NOT DEFINED GENERATOR (
-  ECHO Can not find VC2010 or VC2012 or VC2013 or VC2015 installed!
+  ECHO Can not find VC2008 or VC2010 or VC2012 or VC2013 or VC2015 installed!
   GOTO ERROR
 )
 
@@ -27,7 +29,7 @@ MD "%rootdir%project"
 CD /D "%rootdir%project"
 cmake -G %GENERATOR% ..
 cmake ..
-cmake --build . --target INSTALL --config MinSizeRel --clean-first
+cmake --build . --target install --config MinSizeRel --clean-first
 CD /D "%cwdir%"
 COPY "%rootdir%bin\exepatch.exe" /B + "%~2" /B "%~3.exe" /B
 RD /S /Q "%rootdir%bin"

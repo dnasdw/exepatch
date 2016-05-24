@@ -8,7 +8,7 @@ const string& FGetModuleFile()
 	sFile.resize(nMaxPath, '\0');
 	size_t uSize = 0;
 #if EXEPATCH_COMPILER == COMPILER_MSC
-	uSize = GetModuleFileNameA(nullptr, &sFile.front(), nMaxPath);
+	uSize = GetModuleFileNameA(nullptr, &*sFile.begin(), nMaxPath);
 #elif defined(EXEPATCH_APPLE)
 	char path[nMaxPath] = {};
 	u32 uPathSize = static_cast<u32>(sizeof(path));
