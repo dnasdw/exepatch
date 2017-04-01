@@ -20,8 +20,8 @@ IF NOT DEFINED GENERATOR (
   GOTO ERROR
 )
 
-SET rootdir=%~dp0
 SET cwdir=%CD%
+SET rootdir=%~dp0
 MD "%rootdir%backup"
 MOVE /Y "%rootdir%src\res\icon.ico" "%rootdir%backup"
 COPY "%~1" "%rootdir%src\res\icon.ico"

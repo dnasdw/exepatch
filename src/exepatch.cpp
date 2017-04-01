@@ -2,19 +2,20 @@
 
 int main(int argc, char* argv[])
 {
+	SetLocale();
 	if (argc != 2)
 	{
-#if EXEPATCH_COMPILER == COMPILER_MSC
-		MessageBoxW(nullptr, L"Ê§°Ü", L"", MB_OK);
+#if SDW_PLATFORM == SDW_PLATFORM_WINDOWS
+		MessageBoxW(nullptr, XToW("Ê§°Ü", 936, "CP936").c_str(), L"", MB_OK);
 #endif
 		return 1;
 	}
 	CPatch patch;
 	patch.SetFileName(argv[1]);
-	patch.SetPatchFileName(FGetModuleFile().c_str());
+	patch.SetPatchFileName(UToA(UGetModuleFileName()).c_str());
 	bool bResult = patch.ApplyPatchFile();
-#if EXEPATCH_COMPILER == COMPILER_MSC
-	MessageBoxW(nullptr, bResult ? L"Íê³É" : L"Ê§°Ü", L"", MB_OK);
+#if SDW_PLATFORM == SDW_PLATFORM_WINDOWS
+	MessageBoxW(nullptr, bResult ? XToW("Íê³É", 936, "CP936").c_str() : XToW("Ê§°Ü", 936, "CP936").c_str(), L"", MB_OK);
 #endif
 	return bResult ? 0 : 1;
 }
