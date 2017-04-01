@@ -40,7 +40,7 @@ private:
 	void executeChangeSize(n64 a_nSize);
 	void executeSeekWrite(bool a_bSeekSet, n64 a_nOffset, size_t a_nSize, u8* a_pData);
 	const char* m_pFileName;
-	const char* m_pPatchFileName;
+	string m_sPatchFileName;
 	FILE* m_fpOld;
 	FILE* m_fpPatch;
 	S3dsPatchSystemHeader m_3dsPatchSystemHeader;

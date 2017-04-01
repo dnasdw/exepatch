@@ -8,7 +8,6 @@ const u8 CPatch::s_uCurrentVersionPatchLevel = 0;
 
 CPatch::CPatch()
 	: m_pFileName(nullptr)
-	, m_pPatchFileName(nullptr)
 	, m_fpOld(nullptr)
 	, m_fpPatch(nullptr)
 	, m_uVersion(0)
@@ -27,7 +26,7 @@ void CPatch::SetFileName(const char* a_pFileName)
 
 void CPatch::SetPatchFileName(const char* a_pPatchFileName)
 {
-	m_pPatchFileName = a_pPatchFileName;
+	m_sPatchFileName = a_pPatchFileName;
 }
 
 bool CPatch::ApplyPatchFile()
@@ -37,7 +36,7 @@ bool CPatch::ApplyPatchFile()
 	{
 		return false;
 	}
-	m_fpPatch = Fopen(m_pPatchFileName, "rb");
+	m_fpPatch = Fopen(m_sPatchFileName.c_str(), "rb");
 	if (m_fpPatch == nullptr)
 	{
 		fclose(m_fpOld);
@@ -50,7 +49,7 @@ bool CPatch::ApplyPatchFile()
 	fread(&m_3dsPatchSystemHeader, sizeof(m_3dsPatchSystemHeader), 1, m_fpPatch);
 	if (m_3dsPatchSystemHeader.Signature != s_uSignature)
 	{
-		printf("ERROR: not support patch file %s\n\n", m_pPatchFileName);
+		printf("ERROR: not support patch file %s\n\n", m_sPatchFileName.c_str());
 		fclose(m_fpPatch);
 		fclose(m_fpOld);
 		return false;
