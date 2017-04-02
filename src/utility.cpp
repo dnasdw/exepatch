@@ -10,6 +10,18 @@ FILE* Fopen(const char* a_pFileName, const char* a_pMode, bool a_bVerbose /* = t
 	return fp;
 }
 
+#if SDW_PLATFORM == SDW_PLATFORM_WINDOWS
+FILE* FopenW(const wchar_t* a_pFileName, const wchar_t* a_pMode, bool a_bVerbose /* = true */)
+{
+	FILE* fp = _wfopen(a_pFileName, a_pMode);
+	if (fp == nullptr && a_bVerbose)
+	{
+		wprintf(L"ERROR: open file %ls failed\n\n", a_pFileName);
+	}
+	return fp;
+}
+#endif
+
 bool Seek(FILE* a_fpFile, n64 a_nOffset)
 {
 	if (fflush(a_fpFile) != 0)
@@ -71,21 +83,21 @@ const UString& UGetModuleFileName()
 	u32 uPathSize = uMaxPath;
 	if (_NSGetExecutablePath(szPath, &uPathSize) != 0)
 	{
-		printf("ERROR: _NSGetExecutablePath error\n\n");
 		sFileName.clear();
+		printf("ERROR: _NSGetExecutablePath error\n\n");
 	}
 	else if (realpath(szPath, &*sFileName.begin()) == nullptr)
 	{
-		printf("ERROR: realpath error\n\n");
 		sFileName.clear();
+		printf("ERROR: realpath error\n\n");
 	}
 	uSize = strlen(sFileName.c_str());
 #elif SDW_PLATFORM == SDW_PLATFORM_LINUX || SDW_PLATFORM == SDW_PLATFORM_CYGWIN
 	ssize_t nCount = readlink("/proc/self/exe", &*sFileName.begin(), uMaxPath);
 	if (nCount == -1)
 	{
-		printf("ERROR: readlink /proc/self/exe error\n\n");
 		sFileName.clear();
+		printf("ERROR: readlink /proc/self/exe error\n\n");
 	}
 	else
 	{
@@ -106,46 +118,6 @@ void SetLocale()
 	setlocale(LC_ALL, "");
 #endif
 }
-
-#if (SDW_COMPILER == SDW_COMPILER_MSC && SDW_COMPILER_VERSION < 1600) || (SDW_PLATFORM == SDW_PLATFORM_WINDOWS && SDW_COMPILER != SDW_COMPILER_MSC)
-string WToU8(const wstring& a_sString)
-{
-	int nLength = WideCharToMultiByte(CP_UTF8, 0, a_sString.c_str(), -1, nullptr, 0, nullptr, nullptr);
-	char* pTemp = new char[nLength];
-	WideCharToMultiByte(CP_UTF8, 0, a_sString.c_str(), -1, pTemp, nLength, nullptr, nullptr);
-	string sString = pTemp;
-	delete[] pTemp;
-	return sString;
-}
-#elif (SDW_COMPILER == SDW_COMPILER_GNUC && SDW_COMPILER_VERSION < 50400) || SDW_PLATFORM == SDW_PLATFORM_CYGWIN
-string WToU8(const wstring& a_sString)
-{
-	return TSToS<wstring, string>(a_sString, "WCHAR_T", "UTF-8");
-}
-#else
-string WToU8(const wstring& a_sString)
-{
-	static wstring_convert<codecvt_utf8<wchar_t>> c_cvt_u8;
-	return c_cvt_u8.to_bytes(a_sString);
-}
-#endif
-
-#if SDW_PLATFORM == SDW_PLATFORM_WINDOWS
-string WToA(const wstring& a_sString)
-{
-	int nLength = WideCharToMultiByte(CP_ACP, 0, a_sString.c_str(), -1, nullptr, 0, nullptr, nullptr);
-	char* pTemp = new char[nLength];
-	WideCharToMultiByte(CP_ACP, 0, a_sString.c_str(), -1, pTemp, nLength, nullptr, nullptr);
-	string sString = pTemp;
-	delete[] pTemp;
-	return sString;
-}
-#else
-string WToA(const wstring& a_sString)
-{
-	return WToU8(a_sString);
-}
-#endif
 
 #if defined(SDW_XCONVERT)
 #if SDW_PLATFORM == SDW_PLATFORM_WINDOWS

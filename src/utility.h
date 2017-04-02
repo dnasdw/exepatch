@@ -118,9 +118,6 @@ typedef unsigned long long uint64_t;
 #include <cstdlib>
 #include <cstring>
 #include <algorithm>
-#if SDW_COMPILER == SDW_COMPILER_CLANG || (SDW_COMPILER == SDW_COMPILER_MSC && SDW_COMPILER_VERSION >= 1600) || (SDW_COMPILER == SDW_COMPILER_GNUC && SDW_COMPILER_VERSION >= 50400)
-#include <codecvt>
-#endif
 #include <string>
 
 using namespace std;
@@ -142,9 +139,13 @@ typedef uint64_t u64;
 #endif
 typedef wstring UString;
 #define USTR(x) L##x
+#define PRIUS USTR("ls")
+#define UPrintf wprintf
 #else
 typedef string UString;
 #define USTR(x) x
+#define PRIUS USTR("s")
+#define UPrintf printf
 #endif
 
 #define SDW_BIT64(n) (UINT64_C(1) << (n))
@@ -154,18 +155,24 @@ typedef string UString;
 #if SDW_PLATFORM == SDW_PLATFORM_WINDOWS
 #define Chsize _chsize_s
 #define Fileno _fileno
+#define UFopen FopenW
 #define Fseek _fseeki64
 #define Ftell _ftelli64
 #define Lseek _lseeki64
 #else
 #define Chsize ftruncate
 #define Fileno fileno
+#define UFopen Fopen
 #define Fseek fseeko
 #define Ftell ftello
 #define Lseek lseek
 #endif
 
 FILE* Fopen(const char* a_pFileName, const char* a_pMode, bool a_bVerbose = true);
+
+#if SDW_PLATFORM == SDW_PLATFORM_WINDOWS
+FILE* FopenW(const wchar_t* a_pFileName, const wchar_t* a_pMode, bool a_bVerbose = true);
+#endif
 
 bool Seek(FILE* a_fpFile, n64 a_nOffset);
 
@@ -216,15 +223,6 @@ TDest TSToS(const TSrc& a_sString, const string& a_sSrcType, const string& a_sDe
 	iconv_close(cd);
 	return sConverted;
 }
-#endif
-
-string WToU8(const wstring& a_sString);
-string WToA(const wstring& a_sString);
-
-#if SDW_PLATFORM == SDW_PLATFORM_WINDOWS
-#define UToA(x) WToA(x)
-#else
-#define UToA(x) string(x)
 #endif
 
 #if defined(SDW_XCONVERT)

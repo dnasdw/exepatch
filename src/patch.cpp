@@ -7,8 +7,7 @@ const u8 CPatch::s_uCurrentVersionMinor = 0;
 const u8 CPatch::s_uCurrentVersionPatchLevel = 0;
 
 CPatch::CPatch()
-	: m_pFileName(nullptr)
-	, m_fpOld(nullptr)
+	: m_fpOld(nullptr)
 	, m_fpPatch(nullptr)
 	, m_uVersion(0)
 {
@@ -19,24 +18,24 @@ CPatch::~CPatch()
 {
 }
 
-void CPatch::SetFileName(const char* a_pFileName)
+void CPatch::SetFileName(const string& a_sFileName)
 {
-	m_pFileName = a_pFileName;
+	m_sFileName = a_sFileName;
 }
 
-void CPatch::SetPatchFileName(const char* a_pPatchFileName)
+void CPatch::SetPatchFileName(const UString& a_sPatchFileName)
 {
-	m_sPatchFileName = a_pPatchFileName;
+	m_sPatchFileName = a_sPatchFileName;
 }
 
 bool CPatch::ApplyPatchFile()
 {
-	m_fpOld = Fopen(m_pFileName, "rb+");
+	m_fpOld = Fopen(m_sFileName.c_str(), "rb+");
 	if (m_fpOld == nullptr)
 	{
 		return false;
 	}
-	m_fpPatch = Fopen(m_sPatchFileName.c_str(), "rb");
+	m_fpPatch = UFopen(m_sPatchFileName.c_str(), USTR("rb"));
 	if (m_fpPatch == nullptr)
 	{
 		fclose(m_fpOld);
@@ -49,17 +48,17 @@ bool CPatch::ApplyPatchFile()
 	fread(&m_3dsPatchSystemHeader, sizeof(m_3dsPatchSystemHeader), 1, m_fpPatch);
 	if (m_3dsPatchSystemHeader.Signature != s_uSignature)
 	{
-		printf("ERROR: not support patch file %s\n\n", m_sPatchFileName.c_str());
 		fclose(m_fpPatch);
 		fclose(m_fpOld);
+		UPrintf(USTR("ERROR: not support patch file %") PRIUS USTR("\n\n"), m_sPatchFileName.c_str());
 		return false;
 	}
 	calculateVersion();
 	if (m_uVersion > 0x010000)
 	{
-		printf("ERROR: not support patch file version %" PRIu8 ".%" PRIu8 ".%" PRIu8 "\n\n", m_3dsPatchSystemHeader.VersionMajor, m_3dsPatchSystemHeader.VersionMinor, m_3dsPatchSystemHeader.VersionPatchLevel);
 		fclose(m_fpPatch);
 		fclose(m_fpOld);
+		printf("ERROR: not support patch file version %" PRIu8 ".%" PRIu8 ".%" PRIu8 "\n\n", m_3dsPatchSystemHeader.VersionMajor, m_3dsPatchSystemHeader.VersionMinor, m_3dsPatchSystemHeader.VersionPatchLevel);
 		return false;
 	}
 	bool bResult = false;
@@ -92,9 +91,9 @@ bool CPatch::ApplyPatchFile()
 	}
 	if (bPatched)
 	{
-		printf("ERROR: %s was already patched\n\n", m_pFileName);
 		fclose(m_fpPatch);
 		fclose(m_fpOld);
+		printf("ERROR: %s was already patched\n\n", m_sFileName.c_str());
 		return true;
 	}
 	Fseek(m_fpPatch, -n3psOffset, SEEK_END);
