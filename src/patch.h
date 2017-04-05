@@ -26,7 +26,7 @@ public:
 	};
 	CPatch();
 	~CPatch();
-	void SetFileName(const string& a_sFileName);
+	void SetFileName(const UString& a_sFileName);
 	void SetPatchFileName(const UString& a_sPatchFileName);
 	bool ApplyPatchFile();
 	static const u32 s_uSignature;
@@ -39,7 +39,7 @@ private:
 	void executeSet(n64 a_nStartOffset, n64 a_nSize, u8 a_uData);
 	void executeChangeSize(n64 a_nSize);
 	void executeSeekWrite(bool a_bSeekSet, n64 a_nOffset, size_t a_nSize, u8* a_pData);
-	string m_sFileName;
+	UString m_sFileName;
 	UString m_sPatchFileName;
 	FILE* m_fpOld;
 	FILE* m_fpPatch;

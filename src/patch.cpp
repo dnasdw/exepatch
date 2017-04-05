@@ -18,7 +18,7 @@ CPatch::~CPatch()
 {
 }
 
-void CPatch::SetFileName(const string& a_sFileName)
+void CPatch::SetFileName(const UString& a_sFileName)
 {
 	m_sFileName = a_sFileName;
 }
@@ -30,7 +30,7 @@ void CPatch::SetPatchFileName(const UString& a_sPatchFileName)
 
 bool CPatch::ApplyPatchFile()
 {
-	m_fpOld = Fopen(m_sFileName.c_str(), "rb+");
+	m_fpOld = UFopen(m_sFileName.c_str(), USTR("rb+"));
 	if (m_fpOld == nullptr)
 	{
 		return false;
@@ -58,7 +58,7 @@ bool CPatch::ApplyPatchFile()
 	{
 		fclose(m_fpPatch);
 		fclose(m_fpOld);
-		printf("ERROR: not support patch file version %" PRIu8 ".%" PRIu8 ".%" PRIu8 "\n\n", m_3dsPatchSystemHeader.VersionMajor, m_3dsPatchSystemHeader.VersionMinor, m_3dsPatchSystemHeader.VersionPatchLevel);
+		UPrintf(USTR("ERROR: not support patch file version %") PRIUS USTR(".%") PRIUS USTR(".%") PRIUS USTR("\n\n"), AToU(Format("%" PRIu8, m_3dsPatchSystemHeader.VersionMajor)).c_str(), AToU(Format("%" PRIu8, m_3dsPatchSystemHeader.VersionMinor)).c_str(), AToU(Format("%" PRIu8, m_3dsPatchSystemHeader.VersionPatchLevel)).c_str());
 		return false;
 	}
 	bool bResult = false;
@@ -93,7 +93,7 @@ bool CPatch::ApplyPatchFile()
 	{
 		fclose(m_fpPatch);
 		fclose(m_fpOld);
-		printf("ERROR: %s was already patched\n\n", m_sFileName.c_str());
+		UPrintf(USTR("ERROR: %") PRIUS USTR(" was already patched\n\n"), m_sFileName.c_str());
 		return true;
 	}
 	Fseek(m_fpPatch, -n3psOffset, SEEK_END);
@@ -153,7 +153,7 @@ bool CPatch::ApplyPatchFile()
 		}
 		else
 		{
-			printf("ERROR: unknown patch command %02" PRIX8 "\n\n", uPatchCommand);
+			UPrintf(USTR("ERROR: unknown patch command %") PRIUS USTR("\n\n"), AToU(Format("%02" PRIX8, uPatchCommand)).c_str());
 			break;
 		}
 	} while (true);

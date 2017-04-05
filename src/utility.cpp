@@ -66,6 +66,32 @@ void PadFile(FILE* a_fpFile, n64 a_nPadSize, u8 a_uPadData)
 	delete[] pBuffer;
 }
 
+#if defined(SDW_MAIN)
+extern int UMain(int argc, UChar* argv[]);
+
+int main(int argc, char* argv[])
+{
+	SetLocale();
+	int nArgc = 0;
+	UChar** pArgv = nullptr;
+#if SDW_PLATFORM == SDW_PLATFORM_WINDOWS
+	pArgv = CommandLineToArgvW(GetCommandLineW(), &nArgc);
+	if (pArgv == nullptr)
+	{
+		return 1;
+	}
+#else
+	nArgc = argc;
+	pArgv = argv;
+#endif
+	int nResult = UMain(nArgc, pArgv);
+#if SDW_PLATFORM == SDW_PLATFORM_WINDOWS
+	LocalFree(pArgv);
+#endif
+	return nResult;
+}
+#endif
+
 const UString& UGetModuleFileName()
 {
 	const u32 uMaxPath = 4096;
@@ -119,6 +145,23 @@ void SetLocale()
 #endif
 }
 
+#if SDW_PLATFORM == SDW_PLATFORM_WINDOWS
+wstring AToW(const string& a_sString)
+{
+	int nLength = MultiByteToWideChar(CP_ACP, 0, a_sString.c_str(), -1, nullptr, 0);
+	wchar_t* pTemp = new wchar_t[nLength];
+	MultiByteToWideChar(CP_ACP, 0, a_sString.c_str(), -1, pTemp, nLength);
+	wstring sString = pTemp;
+	delete[] pTemp;
+	return sString;
+}
+#else
+wstring AToW(const string& a_sString)
+{
+	return U8ToW(a_sString);
+}
+#endif
+
 #if defined(SDW_XCONVERT)
 #if SDW_PLATFORM == SDW_PLATFORM_WINDOWS
 wstring XToW(const string& a_sString, int a_nCodePage, const char* a_pCodeName)
@@ -137,3 +180,37 @@ wstring XToW(const string& a_sString, int a_nCodePage, const char* a_pCodeName)
 }
 #endif
 #endif
+
+static const int s_nFormatBufferSize = 4096;
+
+string FormatV(const char* a_szFormat, va_list a_vaList)
+{
+	static char c_szBuffer[s_nFormatBufferSize] = {};
+	vsnprintf(c_szBuffer, s_nFormatBufferSize, a_szFormat, a_vaList);
+	return c_szBuffer;
+}
+
+wstring FormatV(const wchar_t* a_szFormat, va_list a_vaList)
+{
+	static wchar_t c_szBuffer[s_nFormatBufferSize] = {};
+	vswprintf(c_szBuffer, s_nFormatBufferSize, a_szFormat, a_vaList);
+	return c_szBuffer;
+}
+
+string Format(const char* a_szFormat, ...)
+{
+	va_list vaList;
+	va_start(vaList, a_szFormat);
+	string sFormatted = FormatV(a_szFormat, vaList);
+	va_end(vaList);
+	return sFormatted;
+}
+
+wstring Format(const wchar_t* a_szFormat, ...)
+{
+	va_list vaList;
+	va_start(vaList, a_szFormat);
+	wstring sFormatted = FormatV(a_szFormat, vaList);
+	va_end(vaList);
+	return sFormatted;
+}

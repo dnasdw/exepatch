@@ -1,8 +1,7 @@
 #include "patch.h"
 
-int main(int argc, char* argv[])
+int UMain(int argc, UChar* argv[])
 {
-	SetLocale();
 	if (argc != 2)
 	{
 #if SDW_PLATFORM == SDW_PLATFORM_WINDOWS

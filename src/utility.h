@@ -49,6 +49,9 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <io.h>
+#if defined(SDW_MAIN)
+#include <shellapi.h>
+#endif
 #else
 #if SDW_PLATFORM == SDW_PLATFORM_MACOS
 #include <mach-o/dyld.h>
@@ -137,15 +140,11 @@ typedef uint64_t u64;
 #define nullptr NULL
 #endif
 #endif
+typedef wchar_t UChar;
 typedef wstring UString;
-#define USTR(x) L##x
-#define PRIUS USTR("ls")
-#define UPrintf wprintf
 #else
+typedef char UChar;
 typedef string UString;
-#define USTR(x) x
-#define PRIUS USTR("s")
-#define UPrintf printf
 #endif
 
 #define SDW_BIT64(n) (UINT64_C(1) << (n))
@@ -178,7 +177,25 @@ bool Seek(FILE* a_fpFile, n64 a_nOffset);
 
 void PadFile(FILE* a_fpFile, n64 a_nPadSize, u8 a_uPadData);
 
+#if !defined(SDW_MAIN)
+#if SDW_PLATFORM == SDW_PLATFORM_WINDOWS
+#define UMain wmain
+#else
+#define UMain main
+#endif
+#endif
+
 const UString& UGetModuleFileName();
+
+#if SDW_PLATFORM == SDW_PLATFORM_WINDOWS
+#define USTR(x) L##x
+#define PRIUS USTR("ls")
+#define UPrintf wprintf
+#else
+#define USTR(x) x
+#define PRIUS USTR("s")
+#define UPrintf printf
+#endif
 
 void SetLocale();
 
@@ -225,9 +242,22 @@ TDest TSToS(const TSrc& a_sString, const string& a_sSrcType, const string& a_sDe
 }
 #endif
 
+wstring AToW(const string& a_sString);
+
+#if SDW_PLATFORM == SDW_PLATFORM_WINDOWS
+#define AToU(x) AToW(x)
+#else
+#define AToU(x) string(x)
+#endif
+
 #if defined(SDW_XCONVERT)
 wstring XToW(const string& a_sString, int a_nCodePage, const char* a_pCodeName);
 #endif
+
+string FormatV(const char* a_szFormat, va_list a_vaList);
+wstring FormatV(const wchar_t* a_szFormat, va_list a_vaList);
+string Format(const char* a_szFormat, ...);
+wstring Format(const wchar_t* a_szFormat, ...);
 
 template<typename T>
 T Replace(const T& a_sString, typename T::value_type a_cSubChar, typename T::value_type a_cReplacement)
