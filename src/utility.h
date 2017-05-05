@@ -102,6 +102,8 @@
 #define PRIX64 _PFX_64 "X"
 #endif
 #endif
+#include <clocale>
+#include <cstdarg>
 #if SDW_COMPILER != SDW_COMPILER_MSC || (SDW_COMPILER == SDW_COMPILER_MSC && SDW_COMPILER_VERSION >= 1600)
 #include <cstdint>
 #else
@@ -121,6 +123,10 @@ typedef unsigned long long uint64_t;
 #include <cstdlib>
 #include <cstring>
 #include <algorithm>
+#if SDW_COMPILER == SDW_COMPILER_CLANG || (SDW_COMPILER == SDW_COMPILER_MSC && SDW_COMPILER_VERSION >= 1600) || (SDW_COMPILER == SDW_COMPILER_GNUC && SDW_COMPILER_VERSION >= 50400)
+#include <codecvt>
+#endif
+#include <locale>
 #include <string>
 
 using namespace std;
@@ -242,6 +248,7 @@ TDest TSToS(const TSrc& a_sString, const string& a_sSrcType, const string& a_sDe
 }
 #endif
 
+wstring U8ToW(const string& a_sString);
 wstring AToW(const string& a_sString);
 
 #if SDW_PLATFORM == SDW_PLATFORM_WINDOWS

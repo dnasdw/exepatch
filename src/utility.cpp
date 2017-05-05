@@ -145,6 +145,29 @@ void SetLocale()
 #endif
 }
 
+#if (SDW_COMPILER == SDW_COMPILER_MSC && SDW_COMPILER_VERSION < 1600) || (SDW_PLATFORM == SDW_PLATFORM_WINDOWS && SDW_COMPILER != SDW_COMPILER_MSC)
+wstring U8ToW(const string& a_sString)
+{
+	int nLength = MultiByteToWideChar(CP_UTF8, 0, a_sString.c_str(), -1, nullptr, 0);
+	wchar_t* pTemp = new wchar_t[nLength];
+	MultiByteToWideChar(CP_UTF8, 0, a_sString.c_str(), -1, pTemp, nLength);
+	wstring sString = pTemp;
+	delete[] pTemp;
+	return sString;
+}
+#elif (SDW_COMPILER == SDW_COMPILER_GNUC && SDW_COMPILER_VERSION < 50400) || SDW_PLATFORM == SDW_PLATFORM_CYGWIN
+wstring U8ToW(const string& a_sString)
+{
+	return TSToS<string, wstring>(a_sString, "UTF-8", "WCHAR_T");
+}
+#else
+wstring U8ToW(const string& a_sString)
+{
+	static wstring_convert<codecvt_utf8<wchar_t>> c_cvt_u8;
+	return c_cvt_u8.from_bytes(a_sString);
+}
+#endif
+
 #if SDW_PLATFORM == SDW_PLATFORM_WINDOWS
 wstring AToW(const string& a_sString)
 {
