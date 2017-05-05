@@ -20,22 +20,22 @@ IF NOT DEFINED GENERATOR (
   GOTO ERROR
 )
 
-SET cwdir=%CD%
-SET rootdir=%~dp0
-MD "%rootdir%backup"
-MOVE /Y "%rootdir%src\res\icon.ico" "%rootdir%backup"
-COPY "%~1" "%rootdir%src\res\icon.ico"
-MD "%rootdir%project"
-CD /D "%rootdir%project"
+SET cwdir_exepatch=%CD%
+SET rootdir_exepatch=%~dp0
+MD "%rootdir_exepatch%backup"
+MOVE /Y "%rootdir_exepatch%src\res\icon.ico" "%rootdir_exepatch%backup"
+COPY "%~1" "%rootdir_exepatch%src\res\icon.ico"
+MD "%rootdir_exepatch%project"
+CD /D "%rootdir_exepatch%project"
 cmake -G %GENERATOR% ..
 cmake ..
 cmake --build . --target install --config MinSizeRel --clean-first
-CD /D "%cwdir%"
-COPY "%rootdir%bin\exepatch.exe" /B + "%~2" /B "%~3.exe" /B
-RD /S /Q "%rootdir%bin"
-RD /S /Q "%rootdir%project"
-MOVE /Y "%rootdir%backup\icon.ico" "%rootdir%src\res"
-RD /S /Q "%rootdir%backup"
+CD /D "%cwdir_exepatch%"
+COPY "%rootdir_exepatch%bin\exepatch.exe" /B + "%~2" /B "%~3.exe" /B
+RD /S /Q "%rootdir_exepatch%bin"
+RD /S /Q "%rootdir_exepatch%project"
+MOVE /Y "%rootdir_exepatch%backup\icon.ico" "%rootdir_exepatch%src\res"
+RD /S /Q "%rootdir_exepatch%backup"
 GOTO :EOF
 
 :NOARG
