@@ -17,12 +17,12 @@ cwdir_exepatch=`pwd`
 rootdir_exepatch=`dirname "$0"`
 cd "$rootdir_exepatch"
 rootdir_exepatch=`pwd`
-mkdir -p "$rootdir_exepatch/project"
-cd "$rootdir_exepatch/project"
+mkdir -p "$rootdir_exepatch/build"
+cd "$rootdir_exepatch/build"
 cmake ..
 cmake --build . --target install --config MinSizeRel --clean-first
 cd "$cwdir_exepatch"
 cat "$rootdir_exepatch/bin/exepatch" "$1" > "$2"
 chmod +x "$2"
 rm -rf "$rootdir_exepatch/bin"
-rm -rf "$rootdir_exepatch/project"
+rm -rf "$rootdir_exepatch/build"

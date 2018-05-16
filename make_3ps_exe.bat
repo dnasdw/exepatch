@@ -9,15 +9,15 @@ SET rootdir_exepatch=%~dp0
 MD "%rootdir_exepatch%backup"
 MOVE /Y "%rootdir_exepatch%src\res\icon.ico" "%rootdir_exepatch%backup"
 COPY "%~1" "%rootdir_exepatch%src\res\icon.ico"
-MD "%rootdir_exepatch%project"
-CD /D "%rootdir_exepatch%project"
+MD "%rootdir_exepatch%build"
+CD /D "%rootdir_exepatch%build"
 cmake ..
 cmake ..
 cmake --build . --target install --config MinSizeRel --clean-first
 CD /D "%cwdir_exepatch%"
 COPY "%rootdir_exepatch%bin\exepatch.exe" /B + "%~2" /B "%~3.exe" /B
 RD /S /Q "%rootdir_exepatch%bin"
-RD /S /Q "%rootdir_exepatch%project"
+RD /S /Q "%rootdir_exepatch%build"
 MOVE /Y "%rootdir_exepatch%backup\icon.ico" "%rootdir_exepatch%src\res"
 RD /S /Q "%rootdir_exepatch%backup"
 GOTO :EOF
